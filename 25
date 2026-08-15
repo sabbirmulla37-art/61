@@ -1,0 +1,40 @@
+#!/bin/bash
+
+BOT_DIR="/workspaces/prime/Paid-Docker-Bot"
+
+while true; do
+    echo "===================================="
+    echo "🚀 Starting PRIME CLOUD Bot"
+    echo "===================================="
+
+    cd "$BOT_DIR" || {
+        echo "❌ Paid-Docker-Bot folder not found!"
+        sleep 10
+        continue
+    }
+
+    python3 bot.py &
+    BOT_PID=$!
+
+    # 50 minutes tak bot run karo
+    sleep 3000
+
+    echo ""
+    echo "⏰ 50 minutes completed!"
+    echo "🛑 Stopping bot..."
+
+    # Ctrl+C jaisa SIGINT
+    kill -INT "$BOT_PID" 2>/dev/null
+
+    sleep 5
+
+    # Agar process abhi bhi alive hai
+    if kill -0 "$BOT_PID" 2>/dev/null; then
+        echo "⚠️ Bot didn't stop, force stopping..."
+        kill -TERM "$BOT_PID" 2>/dev/null
+        sleep 2
+    fi
+
+    echo "🔄 Restarting bot in 3 seconds..."
+    sleep 3
+done
