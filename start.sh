@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# PrimeCloud 24/7 Bot Supervisor
-
 cd "$(dirname "$0")" || exit 1
 
 LOG_FILE="bot.log"
@@ -12,7 +10,7 @@ echo "📅 $(date)" >> "$LOG_FILE"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >> "$LOG_FILE"
 
 while true; do
-    echo "[$(date)] 🟢 Starting bot..." >> "$LOG_FILE"
+    echo "[$(date)] 🟢 Starting PrimeCloud Bot..." >> "$LOG_FILE"
 
     python3 -u bot.py >> "$LOG_FILE" 2>&1
 
