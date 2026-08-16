@@ -1,0 +1,35 @@
+#!/bin/bash
+
+cd "$(dirname "$0")" || exit 1
+
+LOG_FILE="$(pwd)/bot.log"
+
+echo "[$(date)] PrimeCloud supervisor started" >> "$LOG_FILE"
+
+while true; do
+    # Random restart time: 30–50 minutes
+    RESTART_MIN=$((30 + RANDOM % 21))
+    RESTART_SEC=$((RESTART_MIN * 60))
+
+    echo "[$(date)] 🟢 Bot starting — scheduled restart in ${RESTART_MIN} minutes" >> "$LOG_FILE"
+
+    # Start bot in background
+    python3 -u bot.py >> "$LOG_FILE" 2>&1 &
+    BOT_PID=$!
+
+    # Wait until scheduled restart
+    sleep "$RESTART_SEC"
+
+    echo "[$(date)] 🔄 Scheduled restart — stopping bot PID $BOT_PID" >> "$LOG_FILE"
+
+    kill "$BOT_PID" 2>/dev/null || true
+
+    # Give it time to exit
+    sleep 3
+
+    # If still alive, force stop
+    kill -9 "$BOT_PID" 2>/dev/null || true
+
+    echo "[$(date)] ✅ Restarting bot..." >> "$LOG_FILE"
+    sleep 3
+done
