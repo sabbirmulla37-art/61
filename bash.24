@@ -1,0 +1,53 @@
+#!/bin/bash
+
+APP_DIR="/root/Paid-Docker-Bot"
+SERVICE_NAME="primecloud"
+
+# Check bot directory
+if [ ! -f "$APP_DIR/bot.py" ]; then
+    echo "❌ bot.py not found: $APP_DIR/bot.py"
+    exit 1
+fi
+
+echo "☁️ PrimeCloud 24/7 Setup"
+echo "📁 Bot: $APP_DIR/bot.py"
+
+# Create systemd service
+sudo tee "/etc/systemd/system/${SERVICE_NAME}.service" > /dev/null <<EOF
+[Unit]
+Description=PrimeCloud Discord Bot
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+WorkingDirectory=$APP_DIR
+ExecStart=/usr/bin/python3 $APP_DIR/bot.py
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload systemd
+sudo systemctl daemon-reload
+
+# Enable + start
+sudo systemctl enable "$SERVICE_NAME"
+sudo systemctl restart "$SERVICE_NAME"
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ PrimeCloud 24/7 ACTIVE"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🟢 Bot: Running"
+echo "🔄 Auto Restart: Enabled"
+echo "🚀 VPS Reboot Auto Start: Enabled"
+echo "📝 Logs:"
+echo "   sudo journalctl -u primecloud -f"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+sudo systemctl --no-pager status "$SERVICE_NAME"
