@@ -1,19 +1,25 @@
-cat > start.sh <<'EOF'
 #!/bin/bash
+
+# PrimeCloud 24/7 Bot Supervisor
 
 cd "$(dirname "$0")" || exit 1
 
-echo "☁️ PrimeCloud 24/7 Supervisor Started"
+LOG_FILE="bot.log"
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >> "$LOG_FILE"
+echo "☁️ PrimeCloud Supervisor Started" >> "$LOG_FILE"
+echo "📅 $(date)" >> "$LOG_FILE"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >> "$LOG_FILE"
 
 while true; do
-    echo "🟢 Starting PrimeCloud Bot..."
-    python3 bot.py
+    echo "[$(date)] 🟢 Starting bot..." >> "$LOG_FILE"
+
+    python3 -u bot.py >> "$LOG_FILE" 2>&1
 
     EXIT_CODE=$?
-    echo "🔴 Bot stopped with code: $EXIT_CODE"
-    echo "🔄 Restarting in 5 seconds..."
+
+    echo "[$(date)] 🔴 Bot stopped. Exit code: $EXIT_CODE" >> "$LOG_FILE"
+    echo "[$(date)] 🔄 Restarting in 5 seconds..." >> "$LOG_FILE"
+
     sleep 5
 done
-EOF
-
-chmod +x start.sh
