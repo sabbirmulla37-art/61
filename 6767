@@ -1,0 +1,23 @@
+cat > start.sh <<'SH'
+#!/bin/bash
+
+APP_DIR="$(cd "$(dirname "$0")/Paid-Docker-Bot" && pwd)"
+LOG="$APP_DIR/bot.log"
+
+cd "$APP_DIR" || exit 1
+
+echo "[$(date)] PrimeCloud supervisor started" >> "$LOG"
+
+while true; do
+    echo "[$(date)] Starting bot..." >> "$LOG"
+
+    python3 bot.py >> "$LOG" 2>&1
+    EXIT_CODE=$?
+
+    echo "[$(date)] Bot stopped (exit $EXIT_CODE). Restarting in 5 seconds..." >> "$LOG"
+    sleep 5
+done
+SH
+
+chmod +x start.sh
+nohup ./start.sh >/dev/null 2>&1 &
